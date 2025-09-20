@@ -161,7 +161,7 @@ const BebidasPage = ({ searchTerm = "" }) => {
   }
 
   return (
-    <div className="grid grid-cols-12 container mx-auto pt-[200px]">
+    <div className="grid grid-cols-12 container mx-auto">
       {/* Sidebar */}
       <div className="col-span-3 p-6">
         <Sidebar

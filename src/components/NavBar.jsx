@@ -74,9 +74,7 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
 
   return (
     <nav
-      className={`header ${scrolled ? "scrolled" : ""} z-[150] w-full ${
-        isVisible ? "translate-y-0 transition-transform duration-300" : "-translate-y-full transition-transform duration-300"
-      }`}
+     
     >
       {/* Top bar */}
       <div className="flex items-center justify-between container mx-auto py-5 sm:px-0 px-6">
