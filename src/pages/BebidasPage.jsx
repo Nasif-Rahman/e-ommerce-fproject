@@ -1,15 +1,81 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Ourallproduct from "../components/Ourallproduct";
 import Sidebar from "../components/Sidebar";
 
+const SortingDropdown = ({ sortBy, setSortBy }) => {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const options = [
+    { value: "default", label: "Featured" },
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Avg" },
+    { value: "high", label: "High" },
+  ];
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedLabel = options.find((o) => o.value === sortBy)?.label;
+
+  return (
+    <div className="relative z-10" ref={dropdownRef}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 shadow-sm hover:shadow-md flex items-center justify-between w-40 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+      >
+        {selectedLabel}
+        <svg
+          className={`w-4 h-4 ml-2 transition-transform duration-200 ${
+            open ? "rotate-180" : "rotate-0"
+          }`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <ul className="absolute left-0 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden z-20">
+          {options.map((option) => (
+            <li
+              key={option.value}
+              onClick={() => {
+                setSortBy(option.value);
+                setOpen(false);
+              }}
+              className={`px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white ${
+                sortBy === option.value ? "bg-blue-500 text-white" : ""
+              }`}
+            >
+              {option.label}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 const BebidasPage = ({ searchTerm = "" }) => {
   const [products, setProducts] = useState([]);
-  const [allProducts, setAllProducts] = useState([]); // master copy
+  const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [sortBy, setSortBy] = useState("default"); // sorting state
+  const [sortBy, setSortBy] = useState("default");
   const perPage = 30;
 
   // Fetch categories
@@ -79,7 +145,7 @@ const BebidasPage = ({ searchTerm = "" }) => {
     setCurrentPage(1);
   };
 
-  // Generate pagination pages
+  // Pagination
   const totalPages = Math.ceil(totalResults / perPage);
   const pagination = [];
   for (let i = 1; i <= totalPages; i++) {
@@ -89,10 +155,7 @@ const BebidasPage = ({ searchTerm = "" }) => {
       (i >= currentPage - 2 && i <= currentPage + 2)
     ) {
       pagination.push(i);
-    } else if (
-      i === currentPage - 3 ||
-      i === currentPage + 3
-    ) {
+    } else if (i === currentPage - 3 || i === currentPage + 3) {
       pagination.push("...");
     }
   }
@@ -127,22 +190,7 @@ const BebidasPage = ({ searchTerm = "" }) => {
           </div>
 
           {/* Sorting */}
-          <div className="relative z-10">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="border border-gray-300 rounded-lg  p-3 bg-white text-gray-700 
-                         shadow-sm hover:shadow-md focus:shadow-md 
-                         focus:outline-none focus:ring-2 focus:ring-blue-400 
-                         transition duration-200 ease-in-out transform 
-                         hover:-translate-y-0.5"
-            >
-              <option value="default">Featured</option>
-              <option value="low">Low</option>
-              <option value="medium">Avg</option>
-              <option value="high">High</option>
-            </select>
-          </div>
+          <SortingDropdown sortBy={sortBy} setSortBy={setSortBy} />
         </div>
 
         {/* Product Grid */}
@@ -177,9 +225,7 @@ const BebidasPage = ({ searchTerm = "" }) => {
           )}
 
           <button
-            onClick={() =>
-              setCurrentPage((p) => Math.min(p + 1, totalPages))
-            }
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
             disabled={currentPage === totalPages}
             className="px-3 py-1 border rounded disabled:opacity-50"
           >
