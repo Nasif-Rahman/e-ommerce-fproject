@@ -131,13 +131,13 @@ const BebidasPage = ({ searchTerm = "" }) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 
+              className="border border-gray-300 rounded-lg  p-3 bg-white text-gray-700 
                          shadow-sm hover:shadow-md focus:shadow-md 
                          focus:outline-none focus:ring-2 focus:ring-blue-400 
                          transition duration-200 ease-in-out transform 
                          hover:-translate-y-0.5"
             >
-              <option value="default">Default</option>
+              <option value="default">Featured</option>
               <option value="low">Low</option>
               <option value="medium">Avg</option>
               <option value="high">High</option>

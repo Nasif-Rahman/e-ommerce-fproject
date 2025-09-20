@@ -20,29 +20,40 @@ const Footer = () => {
     fetchCategories();
   }, []);
 
+  // Split categories into 4 columns for display
+  const columns = 4;
+  const catPerCol = Math.ceil(categories.length / columns);
+  const categoryColumns = Array.from({ length: columns }, (_, i) =>
+    categories.slice(i * catPerCol, (i + 1) * catPerCol)
+  );
+
   return (
-    <footer className="bg-gray-300 text-white mt-12 flex justify-center">
-      <div className="container mx-auto gap-6 p-8">
-        <div>
-          <div className="text-white text-xl font-semibold cursor-pointer pb-5" onClick={() => navigate("/")}>
-            <img
-              src="https://shop.sprwforge.com/uploads/header-logo.svg"
-              alt="Logo"
-              className="w-auto h-8 sm:h-10"
-            />
-          </div>
-          <h3 className="text-lg text-black font-bold mb-3">Shop by Category</h3>
-          <ul className="grid grid-cols-6 items-center justify-start">
-            {categories.map((cat) => (
-              <li
-                key={cat.id ?? cat.slug}
-                onClick={() => navigate(`/category/${cat.slug}`)}
-                className="cursor-pointer padionxestwed text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] xl:text-[15px] 2xl:text-[16px]"
-              >
-                {cat.title}
-              </li>
-            ))}
-          </ul>
+    <footer className="bg-white ml-8 mt-12 border-t border-gray-400">
+      <div className="container mx-auto py-10">
+        {/* Categories */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8 font-bold text-gray-800">
+          {categoryColumns.map((col, colIdx) => (
+            <ul key={colIdx} className="flex flex-col gap-2">
+              {col.map((cat) => (
+                <li
+                  key={cat.id ?? cat.slug}
+                  onClick={() => navigate(`/category/${cat.slug}`)}
+                  className="cursor-pointer hover:text-orange-500 text-sm sm:text-base"
+                >
+                  {cat.title}
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+
+        {/* Logo */}
+        <div className="flex justify-center mt-4">
+          <img
+            src="https://shop.sprwforge.com/uploads/header-logo.svg"
+            alt="Logo"
+            className="h-10 sm:h-12"
+          />
         </div>
       </div>
     </footer>

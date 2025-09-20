@@ -6,10 +6,7 @@ const Ourallproduct = ({ products }) => {
   if (!products || products.length === 0) {
     return (
       <p className="text-center text-gray-500">
-        <img
-          src="https://i.pinimg.com/originals/66/17/f4/6617f447369d9c9491b67bb82766110e.gif"
-          alt="loading..."
-        />
+        
       </p>
     );
   }
