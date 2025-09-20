@@ -52,12 +52,10 @@ const Sidebar = ({ categories = [], onSelectCategory, onPriceFilter }) => {
           transform transition-transform duration-300 z-[999]
           ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        <h2 className="font-bold mb-4 text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] xl:text-[24px] 2xl:text-[26px]">
-          Categories
-        </h2>
+       
 
         {/* All Products Button */}
-        <button
+        {/* <button
           onClick={() => {
             onSelectCategory(null);
             setIsOpen(false);
@@ -69,7 +67,7 @@ const Sidebar = ({ categories = [], onSelectCategory, onPriceFilter }) => {
                      focus:bg-gray-900 focus:text-white focus:scale-105"
         >
           <span onClick={goTop}>All Products</span>
-        </button>
+        </button> */}
 
         {/* Category Buttons */}
         {categories.length > 0 ? (
