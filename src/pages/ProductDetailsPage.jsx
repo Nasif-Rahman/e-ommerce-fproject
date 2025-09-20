@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Loading from "../Loading";
 
 const ProductDetailsPage = ({ addToCart }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
 
@@ -31,6 +31,23 @@ const ProductDetailsPage = ({ addToCart }) => {
             relatedData?.data?.result?.data?.filter((p) => p.id !== data.data.id) ?? []
           );
         }
+
+        // Fetch recommended products (request 7 items)
+        const recommendedRes = await fetch(
+          `https://shop.sprwforge.com/api/v1/all?per_page=7`
+        );
+        const recommendedData = await recommendedRes.json();
+        let recommendedList =
+          recommendedData?.data?.result?.data?.filter((p) => p.id !== data.data.id) ?? [];
+        // Limit to 5-7 items
+        if (recommendedList.length > 7) {
+          recommendedList = recommendedList.slice(0, 7); // Cap at 7
+        } else if (recommendedList.length < 5 && recommendedList.length > 0) {
+          recommendedList = recommendedList.concat(
+            recommendedList.slice(0, 5 - recommendedList.length)
+          ); // Pad to 5 if fewer than 5
+        }
+        setRecommendedProducts(recommendedList);
       } catch (err) {
         console.error(err);
       } finally {
@@ -51,7 +68,7 @@ const ProductDetailsPage = ({ addToCart }) => {
     navigate("/cart");
   };
 
-  if (loading) return <Loading />;
+  if (loading) return <p className="text-center mt-20 text-gray-500">Loading...</p>;
   if (!product) return <p className="text-center mt-20 text-gray-500">Product not found.</p>;
 
   return (
@@ -94,7 +111,6 @@ const ProductDetailsPage = ({ addToCart }) => {
                 {product.badge}
               </span>
             )}
-
 
             {/* Quantity Selector */}
             <div className="flex items-center gap-4 mb-6">
@@ -141,6 +157,30 @@ const ProductDetailsPage = ({ addToCart }) => {
           <h2 className="text-xl font-bold mb-6">Related Products</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {relatedProducts.map((item) => (
+              <div
+                key={item.id}
+                className="border rounded-lg p-3 bg-white shadow hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                onClick={() => navigate(`/product/${item.id}`)}
+              >
+                <img
+                  src={`https://shop.sprwforge.com/uploads/${item.image}`}
+                  alt={item.title}
+                  className="w-full h-32 object-contain mb-2 rounded-lg hover:scale-105 transition-transform duration-300"
+                />
+                <h3 className="text-sm font-medium mb-1">{item.title}</h3>
+                <p className="text-blue-600 font-semibold text-sm">€{item.selling}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recommended Products */}
+      {recommendedProducts.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-xl font-bold mb-6">Recommended Products</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {recommendedProducts.map((item) => (
               <div
                 key={item.id}
                 className="border rounded-lg p-3 bg-white shadow hover:shadow-lg transition-shadow duration-300 cursor-pointer"
