@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@500&family=Noto+Sans+JP:wght@400;500&family=Noto+Sans+KR:wght@500&family=Open+Sans:wght@400;500&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -21,7 +20,7 @@
   border-radius: 100px;
   background: #37F;
   color: #FFF;
-  font-family: "HarmonyOS Sans";
+
   font-style: normal;
   font-weight: 400;
   line-height: 150%; /* 24px */
@@ -37,21 +36,21 @@
 
   .padionxestwed{
     color: #7D7F87;
-    font-family: "HarmonyOS Sans";
+   
     font-style: normal;
     font-weight: 400;
     line-height: 150%; /* 24px */
   }
   .tokenbotasonx{
     color: #7D7F87;
-    font-family: "HarmonyOS Sans";
+   
     font-style: normal;
     font-weight: 400;
     line-height: 150%; /* 24px */
   }
   .dictruciotns{
     color: #7D7F87;
-    font-family: "HarmonyOS Sans";
+   
     font-style: normal;
     font-weight: 400;
     line-height: 150%; /* 21px */
@@ -61,7 +60,7 @@
   .dateceseionnub{
     color: #FFF;
     text-align: right;
-    font-family: "HarmonyOS Sans";
+  
     font-style: normal;
     font-weight: 400;
     line-height: 140%; /* 22.4px */
@@ -69,7 +68,7 @@
   .pronclossdate{
     color: #7D7F87;
     text-align: right;
-    font-family: "HarmonyOS Sans";
+  
     font-style: normal;
     font-weight: 400;
     line-height: 150%; /* 21px */
@@ -80,28 +79,28 @@
   }
   .taoalnumbering{
     color: #757B95;
-    font-family: "HarmonyOS Sans";
+   
     font-style: normal;
     font-weight: 400;
     line-height: 150%; /* 24px */
   }
   .numbazzsedcv{
     color: #FFF;
-    font-family: "HarmonyOS Sans";
+  
     font-style: normal;
     font-weight: 700;
     line-height: 140%; /* 33.6px */
   }
   .crysearlyhto{
     color: #FFF;
-    font-family: "HarmonyOS Sans";
+   
     font-style: normal;
     font-weight: 400;
     line-height: 150%; /* 24px */
   }
   .cryptolads{
     color: #FFF;
-    font-family: "HarmonyOS Sans";
+    
     font-style: normal;
     font-weight: 700;
     line-height: 130%; /* 41.6px */
@@ -112,7 +111,7 @@
   }
   .conflueiah{
     color: var(--Blue-B200, #6B788E);
-    font-family: 'HarmonyOS Sans';
+    
     font-style: normal;
     font-weight: 400;
     line-height: 150%; /* 27px */
@@ -131,7 +130,7 @@
   }
   .jonsasdfgawsz{
     color: var(--paragraph, #B3BEBF);
-    font-family: 'HarmonyOS Sans';
+    
     font-style: normal;
     font-weight: 500;
     line-height: 150%; /* 33px */
@@ -166,14 +165,14 @@
 }
   .consnetesds{
     color: var(--paragraph, #B3BEBF);
-    font-family: 'HarmonyOS Sans';
+    
     font-style: normal;
     font-weight: 400;
     line-height: 140%;
   }
   .cfxtokesn{
     color: var(--white, #E4F1F3);
-    font-family: 'HarmonyOS Sans';
+    
     font-style: normal;
     font-weight: 700;
     line-height: 125%; /* 85px */

@@ -21,7 +21,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-gray-900 text-white mt-12">
+    <footer className="bg-gray-300 text-white mt-12 flex justify-center">
       <div className="container mx-auto gap-6 p-8">
         <div>
           <div className="text-white text-xl font-semibold cursor-pointer pb-5" onClick={() => navigate("/")}>
@@ -31,7 +31,7 @@ const Footer = () => {
               className="w-auto h-8 sm:h-10"
             />
           </div>
-          <h3 className="text-lg font-bold mb-3">Shop by Category</h3>
+          <h3 className="text-lg text-black font-bold mb-3">Shop by Category</h3>
           <ul className="grid grid-cols-6 items-center justify-start">
             {categories.map((cat) => (
               <li

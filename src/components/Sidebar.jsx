@@ -23,11 +23,9 @@ const Sidebar = ({ categories = [], onSelectCategory, onPriceFilter }) => {
   };
 
   return (
-    <div className="container mx-auto top-[200px] sticky z-80 z-[999]">
+    <div className="container mx-auto top-[200px] sticky z-[999]">
+      {/* Hamburger for small screens */}
       <div className="lg:hidden p-4 relative z-50">
-        {/* <button onClick={() => setIsOpen(!isOpen)}>
-          <FiMenu size={24} />
-        </button> */}
         <div className="lg:hidden relative top-[-11px] -left-6">
           <div
             className={`transition-transform duration-300 ease-in-out ${
@@ -47,27 +45,33 @@ const Sidebar = ({ categories = [], onSelectCategory, onPriceFilter }) => {
           </div>
         </div>
       </div>
+
+      {/* Sidebar */}
       <div
-        className={`
-          fixed lg:sticky top-[300px] p-7 lg:p-[0] lg:top-0 left-0 h-full bg-white 2xl:border-r  
+        className={`fixed lg:sticky top-[300px] p-7 lg:p-0 lg:top-0 left-0 h-full bg-white 2xl:border-r
           transform transition-transform duration-300 z-[999]
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
-        `}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        <h2 className="font-bold mb-4 text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] xl:text-[20px] 2xl:text-[24px]">
+        <h2 className="font-bold mb-4 text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] xl:text-[24px] 2xl:text-[26px]">
           Categories
         </h2>
 
+        {/* All Products Button */}
         <button
           onClick={() => {
             onSelectCategory(null);
             setIsOpen(false);
           }}
-          className="block mb-2 text-left hover:Link-manu-bar focus:Link-manu-bar w-fit hover:bg-gray-900 focus:bg-gray-900 focus:py-[15px] focus:px-[30px]  hover:py-[15px] hover:px-[30px]  focus:text-white hover:text-white duration-200 text-[10px] sm:text-[11px] md:text-[12px] lg:text-[13px] xl:text-[14px] 2xl:text-[15px]"
+          className="block mb-2 text-left w-fit px-4 py-2 rounded-lg
+                     bg-transparent text-gray-800
+                     transition-all duration-300 ease-in-out
+                     hover:bg-gray-900 hover:text-white hover:scale-105
+                     focus:bg-gray-900 focus:text-white focus:scale-105"
         >
           <span onClick={goTop}>All Products</span>
         </button>
 
+        {/* Category Buttons */}
         {categories.length > 0 ? (
           categories.map((cat) => (
             <button
@@ -76,13 +80,17 @@ const Sidebar = ({ categories = [], onSelectCategory, onPriceFilter }) => {
                 onSelectCategory(cat.slug ?? "");
                 setIsOpen(false);
               }}
-              className="block mb-3 text-left hover:Link-manu-bar focus:Link-manu-bar w-fit hover:bg-gray-900 focus:bg-gray-900 focus:py-[15px] focus:px-[30px]  hover:py-[15px] hover:px-[30px]  focus:text-white hover:text-white duration-200 text-[10px] sm:text-[11px] md:text-[12px] lg:text-[13px] xl:text-[14px] 2xl:text-[15px]"
+              className="block mb-3 text-left w-fit px-4 py-1 rounded-lg
+                         bg-transparent text-gray-800
+                         transition-all duration-300 ease-in-out
+                         hover:bg-gray-900 hover:text-white hover:scale-105
+                         focus:bg-gray-900 focus:text-white focus:scale-105"
             >
               <span onClick={goTop}>{cat.title ?? "Untitled"}</span>
             </button>
           ))
         ) : (
-          <p>No categories available</p>
+          <p className="text-gray-500">No categories available</p>
         )}
 
         {/* Price Filter */}
@@ -94,18 +102,18 @@ const Sidebar = ({ categories = [], onSelectCategory, onPriceFilter }) => {
               placeholder="Min"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
-              className="border px-2 py-1 rounded w-20"
+              className="border px-2 py-1 rounded w-20 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             <input
               type="number"
               placeholder="Max"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              className="border px-2 py-1 rounded w-20"
+              className="border px-2 py-1 rounded w-20 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             <button
               onClick={handlePriceGo}
-              className="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700"
+              className="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-700 hover:text-white transition-all duration-300"
             >
               Go
             </button>

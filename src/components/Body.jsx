@@ -1,8 +1,8 @@
-import Ourallproduct from "./ourallproduct";
+import Ourallproduct from "./Ourallproduct";
 
 const Body = () => {
   return (
-    <div>
+    <div className="bg-gray-300">
       <Ourallproduct />
     </div>
   );
