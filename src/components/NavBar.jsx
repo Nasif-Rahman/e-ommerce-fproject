@@ -1,32 +1,100 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import { FiSearch, FiShoppingCart, FiChevronDown, FiMail, FiPhone } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
-const locales = [
-  "en-GB","ar-SA","zh-CN","de-DE","es-ES","fr-FR","hi-IN","it-IT",
-  "in-ID","ja-JP","ko-KR","nl-NL","no-NO","pl-PL","pt-BR","sv-SE",
-  "fi-FI","th-TH","tr-TR","uk-UA","vi-VN","ru-RU","he-IL",
-];
-
 const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
-  const [selectedLocale, setSelectedLocale] = useState(locales[0]);
+  const [selectedLocale, setSelectedLocale] = useState("en"); // Default to English
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [languages, setLanguages] = useState([]); // Store API languages
   const dropdownRef = useRef(null);
+  const searchContainerRef = useRef(null);
   const navigate = useNavigate();
 
-  // Set default locale based on browser
+  // Fetch common API data for languages
   useEffect(() => {
-    const browserLang = new Intl.Locale(navigator.language).language;
-    const match = locales.find(
-      (locale) => new Intl.Locale(locale).language === browserLang
-    );
-    if (match) setSelectedLocale(match);
+    const fetchCommonData = async () => {
+      try {
+        const res = await fetch("https://shop.sprwforge.com/api/v1/common");
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        console.log("Common API response:", data);
+        if (data?.data?.languages) {
+          setLanguages(data.data.languages);
+        }
+      } catch (err) {
+        console.error("Error fetching common data:", err);
+      }
+    };
+
+    fetchCommonData();
   }, []);
 
-  const intlLocale = new Intl.Locale(selectedLocale);
-  const langName = new Intl.DisplayNames([selectedLocale], { type: "language" }).of(intlLocale.language);
-  const otherLocales = locales.filter(loc => loc !== selectedLocale);
+  // Fetch product suggestions
+  useEffect(() => {
+    if (!searchTerm) {
+      setSuggestions([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(async () => {
+      try {
+        setLoading(true);
+        console.log("Fetching with searchTerm:", searchTerm);
+        const res = await fetch(
+          `https://shop.sprwforge.com/api/v1/products?search=${encodeURIComponent(searchTerm)}`
+        );
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        console.log("Full Search response:", data);
+
+        let results = [];
+        if (data?.data?.result?.data && Array.isArray(data.data.result.data)) {
+          results = data.data.result.data;
+          console.log("Filtered products:", results);
+        } else {
+          console.warn("No products array found. Available paths:", {
+            "data.result.data": data?.data?.result?.data,
+            "data.data": data?.data,
+            "data.result": data?.data?.result,
+          });
+        }
+
+        setSuggestions(results);
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+        setSuggestions([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
+
+  // Handle click outside to close dropdown and suggestions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
+      ) {
+        setDropdownOpen(false);
+        setSearchTerm("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setSearchTerm]);
 
   const handleLoginLogout = () => {
     if (isLoggedIn) {
@@ -37,86 +105,56 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
     }
   };
 
-  // Scroll hide/show states
-  const [scrolled, setScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const handleSuggestionClick = (product) => {
+    navigate(`/product/${product.id}`);
+    setSearchTerm("");
+    setSuggestions([]);
+  };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      setScrolled(currentScrollPos > 50);
-
-      if (currentScrollPos < 50) {
-        setIsVisible(true);
-      } else if (currentScrollPos > prevScrollPos) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      setPrevScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [prevScrollPos]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const handleLanguageSelect = (code) => {
+    setSelectedLocale(code);
+    setDropdownOpen(false); // Close dropdown after selection
+  };
 
   return (
-    <nav
-     
-    >
+    <nav>
       {/* Top bar */}
       <div className="flex items-center justify-between container mx-auto py-5 sm:px-0 px-6">
         <div className="flex items-center gap-4 relative">
           {/* Language Switcher */}
           <div className="relative" ref={dropdownRef}>
             <button
-              onClick={() => setDropdownOpen(prev => !prev)}
+              onClick={() => setDropdownOpen((prev) => !prev)}
               className="flex items-center gap-2 border px-3 py-2 rounded-md shadow-sm hover:bg-gray-100 transition"
             >
-              <span className="capitalize">{langName}</span>
+              <span className="capitalize">
+                {languages.find((lang) => lang.code === selectedLocale)?.name || "English"}
+              </span>
               <FiChevronDown className="text-gray-600" />
             </button>
-
             {dropdownOpen && (
-              <ul className="absolute mt-2 bg-white shadow-lg rounded-md border w-40 max-h-56 overflow-y-auto z-50">
-                {otherLocales.map(locale => {
-                  const otherIntl = new Intl.Locale(locale);
-                  const otherLangName = new Intl.DisplayNames([locale], { type: "language" }).of(otherIntl.language);
-                  return (
-                    <li
-                      key={locale}
-                      className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${selectedLocale === locale ? "bg-gray-50 font-medium" : ""}`}
-                      onClick={() => {
-                        setSelectedLocale(locale);
-                        setDropdownOpen(false);
-                      }}
-                    >
-                      {otherLangName}
-                    </li>
-                  );
-                })}
+              <ul className="absolute top-full left-0 mt-1 w-40 bg-white border rounded-md shadow-lg z-50">
+                {languages.map((language) => (
+                  <li
+                    key={language.code}
+                    onClick={() => handleLanguageSelect(language.code)}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <span className="capitalize">{language.name}</span>
+                  </li>
+                ))}
               </ul>
             )}
           </div>
 
           {/* Email & Phone */}
           <p className="hidden lg:flex items-center gap-1 text-gray-700">
-            <FiMail className="text-gray-500" /> <a href="mailto:webzedcontact@gmail.com">Mail: webzedcontact@gmail.com</a>
+            <FiMail className="text-gray-500" />
+            <a href="mailto:webzedcontact@gmail.com">Mail: webzedcontact@gmail.com</a>
           </p>
           <p className="hidden sm:flex items-center gap-1 text-gray-700">
-            <FiPhone className="text-gray-500" /> <a href="tel:4534345656">Helpline: 4534345656</a>
+            <FiPhone className="text-gray-500" />
+            <a href="tel:4534345656">Helpline: 4534345656</a>
           </p>
         </div>
 
@@ -152,16 +190,65 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
             />
           </div>
 
-          {/* Search bar */}
-          <div className="relative flex-1">
+          {/* Search bar with suggestions */}
+          <div className="relative flex-1 z-[1000]" ref={searchContainerRef}>
             <input
               type="text"
               placeholder="Search Here"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full shadow-md border border-gray-300 px-10 py-3 rounded-xl outline-none focus:ring-1 focus:ring-blue-700"
+              onChange={(e) => {
+                console.log("Search term changed to:", e.target.value);
+                setSearchTerm(e.target.value);
+              }}
+              className="w-full bg-gray-100 text-gray-700 placeholder-gray-600 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-700"
             />
             <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
+
+            {searchTerm && (
+              <div className="absolute left-0 w-full mt-1 z-50">
+                {loading ? (
+                  <div className="bg-white border rounded-lg shadow-md p-3 text-gray-700">
+                    Loading...
+                  </div>
+                ) : suggestions.length > 0 ? (
+                  <ul className="bg-white border rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                    {suggestions.map((product) => (
+                      <li
+                        key={product.id || Math.random()}
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 cursor-pointer border-b last:border-b-0"
+                        onClick={() => handleSuggestionClick(product)}
+                      >
+                        {product.image ? (
+                          <img
+                            src={`https://shop.sprwforge.com/uploads/${product.image}`}
+                            alt={product.title || "Product"}
+                            className="w-10 h-10 object-cover rounded"
+                            onError={(e) => {
+                              console.log(`Image load failed for ${e.target.src}`);
+                              e.target.style.display = "none";
+                              e.target.nextSibling.style.display = "block";
+                            }}
+                          />
+                        ) : null}
+                        <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center hidden">
+                          <span className="text-gray-500 text-xs">No Image</span>
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-gray-800 block truncate">{product.title}</span>
+                          {product.selling && (
+                            <span className="text-sm text-gray-500 block">${product.selling}</span>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : searchTerm.length > 0 && !loading ? (
+                  <div className="bg-white border rounded-lg shadow-md p-3 text-gray-700">
+                    No results found for "{searchTerm}"
+                  </div>
+                ) : null}
+              </div>
+            )}
           </div>
         </div>
       </div>

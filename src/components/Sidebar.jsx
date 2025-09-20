@@ -23,7 +23,7 @@ const Sidebar = ({ categories = [], onSelectCategory, onPriceFilter }) => {
   };
 
   return (
-    <div className="container mx-auto top-[200px] sticky z-[999]">
+    <div className="container mx-auto top-[200px] ">
       {/* Hamburger for small screens */}
       <div className="lg:hidden p-4 relative z-50">
         <div className="lg:hidden relative top-[-11px] -left-6">
